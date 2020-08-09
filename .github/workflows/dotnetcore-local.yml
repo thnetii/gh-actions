@@ -65,7 +65,7 @@ jobs:
     defaults:
       run:
         shell: pwsh
-    if: ${{ matrix['configuration.skip'] != 'true' && matrix['rid.skip'] != 'true' }}
+    # if: ${{ matrix['configuration.skip'] != 'true' && matrix['rid.skip'] != 'true' }}
     steps:
       - name: dotnet restore ${{ matrix['configuration.restore.arguments'] }} ${{ matrix['rid.restore.arguments'] }}
         continue-on-error: true
