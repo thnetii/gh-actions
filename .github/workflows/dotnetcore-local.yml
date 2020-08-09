@@ -27,10 +27,18 @@ jobs:
           - rid.id: "agnostic"
             runs-on: "windows-latest"
             rid.publish.skip: ${{ true }}
+          - configuration.id: "debug"
+            rid.id: "windows"
+            rid.skip: ${{ true }}
+          - configuration.id: "debug"
+            rid.id: "linux"
+            rid.skip: ${{ true }}
+          - configuration.id: "debug"
+            rid.id: "macos"
+            rid.skip: ${{ true }}
           - rid.id: "windows"
             runs-on: "windows-latest"
             rid.name: "(Windows)"
-            rid.skip: ${{ matrix['configuration.id'] == 'debug' }}
             rid.restore.arguments: "--runtime win10-x64"
             rid.build.arguments: "--runtime win10-x64"
             rid.test.arguments: "--runtime win10-x64 --collect \"Code Coverage\""
