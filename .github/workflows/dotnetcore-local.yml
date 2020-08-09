@@ -47,7 +47,6 @@ jobs:
           - rid.id: "linux"
             runs-on: "ubuntu-latest"
             rid.name: "(Linux)"
-            rid.skip: ${{ matrix['configuration.id'] == 'debug' }}
             rid.restore.arguments: "--runtime linux-x64"
             rid.build.arguments: "--runtime linux-x64"
             rid.test.arguments: "--runtime linux-x64"
@@ -56,7 +55,6 @@ jobs:
           - rid.id: "macos"
             runs-on: "macos-latest"
             rid.name: "(macOS)"
-            rid.skip: ${{ matrix['configuration.id'] == 'debug' }}
             rid.restore.arguments: "--runtime osx-x64"
             rid.build.arguments: "--runtime osx-x64"
             rid.test.arguments: "--runtime osx-x64"
