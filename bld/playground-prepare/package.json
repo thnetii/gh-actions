@@ -1,0 +1,19 @@
+{
+  "name": "playground-prepare",
+  "version": "1.0.0",
+  "description": "The JavaScript code for the playground-prepare GitHub action",
+  "main": "action.js",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/thnetii/gh-actions.git"
+  },
+  "author": "Fredrik Høisæther Rasch <fredrik.rasch@gmail.com>",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/thnetii/gh-actions/issues"
+  },
+  "homepage": "https://github.com/thnetii/gh-actions#readme",
+  "dependencies": {
+    "@actions/core": "^1.2.5"
+  }
+}
