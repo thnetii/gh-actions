@@ -27,7 +27,7 @@ jobs:
           - project
           - netstandard2.0
           - netstandard2.1
-        excludes:
+        exclude:
           - configuration: debug
             runtime: windows
           - configuration: debug
@@ -47,7 +47,7 @@ jobs:
             os: windows-latest
           - runtime: windows
             os: windows-latest
-            runtime.display: (Linux, 64-bit)
+            runtime.display: (Windows, 64-bit)
           - runtime: linux
             os: ubuntu-latest
             runtime.display: (Linux, 64-bit)
