@@ -70,7 +70,7 @@ jobs:
         with:
           submodules: recursive
       - name: .NET Version Information
-        uses: ./def/dotnet-version
+        uses: ./def/dotnet-version-info
       - name: dotnet restore
         uses: ./def/dotnet-sdk
         with:
