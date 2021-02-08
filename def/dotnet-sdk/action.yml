@@ -80,16 +80,8 @@ inputs:
     required: false
 outputs: {}
 runs:
-  using: composite
-  steps:
-    - shell: pwsh
-      run: npm install
-      working-directory: ${{ github.action_path }}
-    - shell: pwsh
-      run: npx tsc action.ts
-      working-directory: ${{ github.action_path }}
-    - shell: pwsh
-      run: node ${{ github.action_path }}/action.js
+  using: node12
+  main: action.js
 author: Fredrik Høisæther Rasch <fredrik.rasch@gmail.com>
 branding:
   color: purple
