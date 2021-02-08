@@ -52,6 +52,6 @@
     </PackageReference>
   </ItemGroup>
   <ItemGroup Label="Nullable helper library for Pre-.NET Standard 2.1">
-    <PackageReference Include="Nullable" Version="1.2.1" PrivateAssets="All" />
+    <PackageReference Include="Nullable" Version="1.3.0" PrivateAssets="All" />
   </ItemGroup>
 </Project>
