@@ -1,8 +1,11 @@
 name: .NET Continuous Integration
 
 on:
-  - pull_request
-  - push
+  pull_request: {}
+  push:
+    branches:
+      - master
+      - releases/**
 
 defaults:
   run:
