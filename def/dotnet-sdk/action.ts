@@ -24,7 +24,7 @@ glob.create(inputs.project).then(globber => {
   const projGlobs = inputs.project.split(EOL);
   let projGlobMessage = 'Input project glob patterns:';
   if (projGlobs.length) {
-    for (const projGlobPattern in projGlobs) {
+    for (const projGlobPattern of projGlobs) {
       projGlobMessage += EOL + '  - ' + projGlobPattern;
     }
   } else {
@@ -35,7 +35,7 @@ glob.create(inputs.project).then(globber => {
   globber.glob().then(projGlobResults => {
     let projGlobResultMessage = 'Resolved project glob paths:';
     if (projGlobResults.length) {
-      for (const projGlobResultPath in projGlobResults) {
+      for (const projGlobResultPath of projGlobResults) {
         projGlobResultMessage += EOL + '  - ' + projGlobResultPath;
       }
     } else {
