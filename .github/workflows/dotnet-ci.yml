@@ -91,3 +91,26 @@ jobs:
           configuration: ${{ matrix['configuration.id'] }}
           framework: ${{ matrix['targetFramework.id'] }}
           runtime: ${{ matrix['runtime.id'] }}
+      - name: dotnet test
+        uses: ./def/dotnet-sdk
+        if: ${{ runner.os }} != 'Windows'
+        with:
+          command: test
+          project: |
+            [Tt]ests?/**/*.*proj
+          configuration: ${{ matrix['configuration.id'] }}
+          framework: ${{ matrix['targetFramework.id'] }}
+          runtime: ${{ matrix['runtime.id'] }}
+      - name: dotnet test
+        uses: ./def/dotnet-sdk
+        if: ${{ runner.os }} == 'Windows'
+        with:
+          command: test
+          project: |
+            [Tt]ests?/**/*.*proj
+          configuration: ${{ matrix['configuration.id'] }}
+          framework: ${{ matrix['targetFramework.id'] }}
+          runtime: ${{ matrix['runtime.id'] }}
+          dotnet-arguments: |
+            --collect
+            Code Coverage
