@@ -49,14 +49,17 @@ jobs:
             os: windows-latest
             runtime.id: win10-x64
             runtime.display: (Windows, 64-bit)
+            artifact.name.suffix: -windows
           - runtime: linux
             os: ubuntu-latest
             runtime.id: linux-x64
             runtime.display: (Linux, 64-bit)
+            artifact.name.suffix: -linux
           - runtime: macos
             os: macos-latest
             runtime.id: osx-x64
             runtime.display: (macOS, 64-bit)
+            artifact.name.suffix: -macos
     name: ${{ matrix['configuration.display'] }} ${{ matrix['runtime.display'] }}
     runs-on: ${{ matrix.os }}
     steps:
@@ -109,3 +112,9 @@ jobs:
             [Ss]rc/**/*.*proj
           configuration: ${{ matrix['configuration.id'] }}
           runtime: ${{ matrix['runtime.id'] }}
+      - name: Upload Nuget artifacts
+        uses: actions/upload-artifact@v2
+        with:
+          name: ${{ github.repository_owner }}-${{ github.event.repository.name }}-nupkg-${{ matrix.configuration }}${{ matrix['artifact.name.suffix'] }}
+          path: |
+            bin/${{ matrix['configuration.id'] }}/**/*.s?nupkg
