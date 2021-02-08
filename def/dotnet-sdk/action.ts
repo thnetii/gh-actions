@@ -1,4 +1,5 @@
 import { EOL } from 'os';
+import * as path from 'path';
 import * as core from '@actions/core';
 import * as glob from '@actions/glob';
 import * as exec from '@actions/exec';
@@ -20,6 +21,60 @@ const inputs = {
 
 console.log(inputs);
 
+let preProjectArguments = [
+  inputs.command,
+  ...inputs.dotnet_arguments
+];
+let postProjectArguments = [
+  ...inputs.msbuild_arguments
+];
+
+if (inputs.configuration) {
+  if (inputs.command in ['build', 'pack', 'publish', 'test']) {
+    preProjectArguments.push('--configuration', inputs.configuration);
+  } else {
+    postProjectArguments.push(`-property:Configuration=${inputs.configuration}`);
+  }
+}
+if (inputs.framework) {
+  if (inputs.command in ['build', 'publish', 'test']) {
+    preProjectArguments.push('--framework', inputs.framework);
+  } else {
+    postProjectArguments.push(`-property:TargetFramework=${inputs.framework}`);
+  }
+}
+if (inputs.runtime) {
+  if (inputs.command in ['restore', 'build', 'pack', 'publish', 'test']) {
+    preProjectArguments.push('--runtime', inputs.runtime);
+  } else {
+    postProjectArguments.push(`-property:RuntimeIdentifier=${inputs.runtime}`);
+  }
+}
+if (inputs.nuget_source) {
+  if (inputs.command == 'restore') {
+    preProjectArguments.push('--source', inputs.nuget_source);
+  } else {
+    postProjectArguments.push(`-property:RestoreSources=${inputs.nuget_source}`);
+  }
+}
+if (inputs.nuget_packages_dir) {
+  if (inputs.command == 'restore') {
+    preProjectArguments.push('--packages', inputs.nuget_packages_dir);
+  } else {
+    postProjectArguments.push(`-property:RestorePackagesPath=${inputs.nuget_packages_dir}`);
+  }
+}
+if (inputs.nuget_configfile) {
+  if (inputs.command == 'restore') {
+    preProjectArguments.push('--configfile', inputs.nuget_configfile);
+  } else {
+    postProjectArguments.push(`-property:RestoreConfigFile=${inputs.nuget_configfile}`);
+  }
+}
+if (inputs.verbosity) {
+  preProjectArguments.push('--verbosity', inputs.verbosity);
+}
+
 glob.create(inputs.project).then(globber => {
   const projGlobs = inputs.project.split(EOL);
   let projGlobMessage = 'Input project glob patterns:';
@@ -32,7 +87,7 @@ glob.create(inputs.project).then(globber => {
   }
   core.info(projGlobMessage);
 
-  globber.glob().then(projGlobResults => {
+  globber.glob().then(async projGlobResults => {
     let projGlobResultMessage = 'Resolved project glob paths:';
     if (projGlobResults.length) {
       for (const projGlobResultPath of projGlobResults) {
@@ -42,5 +97,20 @@ glob.create(inputs.project).then(globber => {
       projGlobResultMessage += ' []';
     }
     core.info(projGlobResultMessage);
+
+    for (const projGlobResultPath of projGlobResults) {
+      let invokeArguments = [];
+      invokeArguments.push(...preProjectArguments);
+      invokeArguments.push(projGlobResultPath);
+      invokeArguments.push(...postProjectArguments);
+      if (inputs.binlogDir) {
+        const binlogFileName = `${path.basename(projGlobResultPath)}.${inputs.command}.binlog`;
+        const binlogFilePath = path.join(inputs.binlogDir, binlogFileName);
+        let binlogArg = `-bl:${path.normalize(binlogFilePath)}`;
+        invokeArguments.push(binlogArg);
+      }
+
+      const result = await exec.exec('dotnet', invokeArguments);
+    }
   });
 });

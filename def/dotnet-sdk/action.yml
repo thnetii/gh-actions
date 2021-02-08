@@ -46,7 +46,7 @@ inputs:
   nuget-packages-dir:
     description: |
       The directory to which packages are restored to.
-      Appends: `--source <value>` if `command` == `restore`.
+      Appends: `--packages <value>` if `command` == `restore`.
       Else: appends `-property:RestorePackagesPath=<value>` to the MSBuild arguments instead.
     required: false
   nuget-configfile:
