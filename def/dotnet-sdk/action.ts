@@ -12,8 +12,8 @@ const inputs = {
   nuget_source: core.getInput('nuget-source', { required: false }),
   nuget_packages_dir: core.getInput('nuget-packages-dir', { required: false }),
   nuget_configfile: core.getInput('nuget-configfile', { required: false }),
-  dotnet_arguments: core.getInput('dotnet-arguments', { required: false })?.split(EOL),
-  msbuild_arguments: core.getInput('msbuild-arguments', { required: false })?.split(EOL),
+  dotnet_arguments: core.getInput('dotnet-arguments', { required: false })?.split(EOL).filter(i => i),
+  msbuild_arguments: core.getInput('msbuild-arguments', { required: false })?.split(EOL).filter(i => i),
   verbosity: core.getInput('verbosity', { required: false }),
   binlogDir: core.getInput('binary-log-directory', { required: false })
 };
