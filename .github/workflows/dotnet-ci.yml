@@ -125,4 +125,5 @@ jobs:
         with:
           name: ${{ github.repository_owner }}-${{ github.event.repository.name }}-nupkg-${{ matrix.configuration }}${{ matrix['artifact.name.suffix'] }}
           path: |
-            bin/${{ matrix['configuration.id'] }}/**/*.s?nupkg
+            bin/${{ matrix['configuration.id'] }}/**/*.nupkg
+            bin/${{ matrix['configuration.id'] }}/**/*.snupkg
