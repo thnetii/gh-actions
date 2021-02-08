@@ -70,9 +70,9 @@ jobs:
         with:
           submodules: recursive
       - name: .NET Version Information
-        uses: ${{ github.repository }}/bld/dotnet-version@{{ github.sha }}
+        uses: thnetii/gh-actions/bld/dotnet-version@master
       - name: dotnet restore
-        uses: ${{ github.repository }}/bld/dotnet-sdk@{{ github.sha }}
+        uses: thnetii/gh-actions/bld/dotnet-sdk@master
         with:
           command: restore
           project: |
@@ -81,7 +81,7 @@ jobs:
           framework: ${{ matrix['targetFramework.id'] }}
           runtime: ${{ matrix['runtime.id'] }}
       - name: dotnet build
-        uses: ${{ github.repository }}/bld/dotnet-sdk@{{ github.sha }}
+        uses: thnetii/gh-actions/bld/dotnet-sdk@master
         with:
           command: build
           project: |
