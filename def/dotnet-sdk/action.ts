@@ -30,21 +30,21 @@ let postProjectArguments = [
 ];
 
 if (inputs.configuration) {
-  if (inputs.command in ['build', 'pack', 'publish', 'test']) {
+  if (['build', 'pack', 'publish', 'test'].includes(inputs.command)) {
     preProjectArguments.push('--configuration', inputs.configuration);
   } else {
     postProjectArguments.push(`-property:Configuration=${inputs.configuration}`);
   }
 }
 if (inputs.framework) {
-  if (inputs.command in ['build', 'publish', 'test']) {
+  if (['build', 'publish', 'test'].includes(inputs.command)) {
     preProjectArguments.push('--framework', inputs.framework);
   } else {
     postProjectArguments.push(`-property:TargetFramework=${inputs.framework}`);
   }
 }
 if (inputs.runtime) {
-  if (inputs.command in ['restore', 'build', 'pack', 'publish', 'test']) {
+  if (['restore', 'build', 'pack', 'publish', 'test'].includes(inputs.command)) {
     preProjectArguments.push('--runtime', inputs.runtime);
   } else {
     postProjectArguments.push(`-property:RuntimeIdentifier=${inputs.runtime}`);
