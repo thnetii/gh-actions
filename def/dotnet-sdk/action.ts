@@ -112,7 +112,12 @@ glob.create(inputs.project).then(globber => {
           invokeArguments.push(binlogArg);
         }
 
-        await exec.exec('dotnet', invokeArguments);
+        try {
+          await exec.exec('dotnet', invokeArguments);
+        } catch (e) {
+          core.setFailed(e);
+          return;
+        }
       }
       finally { core.endGroup(); }
     }
