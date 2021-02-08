@@ -110,6 +110,7 @@ jobs:
           name: ${{ github.repository_owner }}-${{ github.event.repository.name }}-testresults-${{ matrix.configuration }}${{ matrix['artifact.name.suffix'] }}
           path: |
             TestResults
+          if-no-files-found: ignore
         continue-on-error: true
       - name: dotnet pack
         uses: ./def/dotnet-sdk
