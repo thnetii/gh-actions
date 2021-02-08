@@ -10,6 +10,7 @@ runs:
         Write-Host "::endgroup::"
         Write-Host "::group::dotnet msbuild -version"
         & dotnet msbuild -version
+        Write-Host ""
         Write-Host "::endgroup::"
 author: Fredrik Høisæther Rasch <fredrik.rasch@gmail.com>
 branding:
