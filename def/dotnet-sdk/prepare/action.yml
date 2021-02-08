@@ -7,14 +7,12 @@ runs:
       run: |
         Write-Host "::group::npm install $(Get-Location)"
         npm install
-        Write-Host ""
         Write-Host "::endgroup::"
       working-directory: ${{ github.action_path }}/..
     - shell: pwsh
       run: |
         Write-Host "::group::tsc $(Resolve-Path action.ts)"
         npx tsc action.ts
-        Write-Host ""
         Write-Host "::endgroup::"
       working-directory: ${{ github.action_path }}/..
 author: Fredrik Høisæther Rasch <fredrik.rasch@gmail.com>
