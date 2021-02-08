@@ -93,7 +93,7 @@ jobs:
           runtime: ${{ matrix['runtime.id'] }}
       - name: dotnet test
         uses: ./def/dotnet-sdk
-        if: ${{ runner.os }} != 'Windows'
+        if: ${{ runner.os != 'Windows' }}
         with:
           command: test
           project: |
@@ -103,7 +103,7 @@ jobs:
           runtime: ${{ matrix['runtime.id'] }}
       - name: dotnet test
         uses: ./def/dotnet-sdk
-        if: ${{ runner.os }} == 'Windows'
+        if: ${{ runner.os == 'Windows' }}
         with:
           command: test
           project: |
