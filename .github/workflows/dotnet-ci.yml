@@ -91,7 +91,7 @@ jobs:
           configuration: ${{ matrix['configuration.id'] }}
           framework: ${{ matrix['targetFramework.id'] }}
           runtime: ${{ matrix['runtime.id'] }}
-      - name: dotnet test
+      - name: dotnet test (non-Windows OS)
         uses: ./def/dotnet-sdk
         if: ${{ runner.os != 'Windows' }}
         with:
@@ -101,7 +101,7 @@ jobs:
           configuration: ${{ matrix['configuration.id'] }}
           framework: ${{ matrix['targetFramework.id'] }}
           runtime: ${{ matrix['runtime.id'] }}
-      - name: dotnet test
+      - name: dotnet test (Windows OS)
         uses: ./def/dotnet-sdk
         if: ${{ runner.os == 'Windows' }}
         with:
