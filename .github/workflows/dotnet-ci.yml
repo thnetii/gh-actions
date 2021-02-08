@@ -66,16 +66,16 @@ jobs:
             targetFramework.id: netstandard2.0
             targetFramework.display: for .NET Standard 2.0
             project.all: |
-              src/THNETII.GitHubActions.Toolkit.Core
+              src/THNETII.GitHubActions.Toolkit.Core/*.csproj
             project.publish: |
-              src/THNETII.GitHubActions.Toolkit.Core
+              src/THNETII.GitHubActions.Toolkit.Core/*.csproj
           - targetFramework: netstandard2.1
             targetFramework.id: netstandard2.1
             targetFramework.display: for .NET Standard 2.1
             project.all: |
-              src/THNETII.GitHubActions.Toolkit.Core
+              src/THNETII.GitHubActions.Toolkit.Core/*.csproj
             project.publish: |
-              src/THNETII.GitHubActions.Toolkit.Core
+              src/THNETII.GitHubActions.Toolkit.Core/*.csproj
     name: ${{ matrix['configuration.display'] }} ${{ matrix['runtime.display'] }} ${{ matrix['targetFramework.display'] }}
     runs-on: ${{ matrix.os }}
     steps:
