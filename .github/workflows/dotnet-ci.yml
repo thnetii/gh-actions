@@ -31,7 +31,7 @@ jobs:
           - msbuild.arguments: |
               -property:BuildId=${{ github.run_number }}
               -property:BuildSourceBranch=${{ github.ref }}
-          - dotnet.test.arguments: |
+            dotnet.test.arguments: |
               --logger
               trx
               --results-directory
@@ -97,6 +97,7 @@ jobs:
             [Ss]amples?/**/*.*proj
           configuration: ${{ matrix['configuration.id'] }}
           runtime: ${{ matrix['runtime.id'] }}
+          dotnet-arguments: --nologo
           msbuild-arguments: ${{ matrix['msbuild.arguments'] }}
       - name: dotnet test
         uses: ./def/dotnet-sdk
@@ -107,6 +108,7 @@ jobs:
           configuration: ${{ matrix['configuration.id'] }}
           runtime: ${{ matrix['runtime.id'] }}
           dotnet-arguments: |
+            --nologo
             ${{ matrix['dotnet.test.arguments'] }}
             ${{ matrix['dotnet.test.arguments.runtime'] }}
           msbuild-arguments: ${{ matrix['msbuild.arguments'] }}
@@ -126,6 +128,7 @@ jobs:
             [Ss]rc/**/*.*proj
           configuration: ${{ matrix['configuration.id'] }}
           runtime: ${{ matrix['runtime.id'] }}
+          dotnet-arguments: --nologo
           msbuild-arguments: ${{ matrix['msbuild.arguments'] }}
       - name: Upload Nuget artifacts
         uses: actions/upload-artifact@v2
