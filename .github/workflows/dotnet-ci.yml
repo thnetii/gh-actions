@@ -28,6 +28,9 @@ jobs:
           - configuration: debug
             runtime: macos
         include:
+          - msbuild.arguments: |
+              -property:BuildId=${{ github.run_id }}
+              -property:BuildSourceBranch=${{ github.ref }}
           - dotnet.test.arguments: |
               --logger
               trx
@@ -82,6 +85,7 @@ jobs:
             [Ss]amples?/**/*.*proj
           configuration: ${{ matrix['configuration.id'] }}
           runtime: ${{ matrix['runtime.id'] }}
+          msbuild-arguments: ${{ matrix['msbuild.arguments'] }}
       - name: dotnet build
         uses: ./def/dotnet-sdk
         with:
@@ -93,6 +97,7 @@ jobs:
             [Ss]amples?/**/*.*proj
           configuration: ${{ matrix['configuration.id'] }}
           runtime: ${{ matrix['runtime.id'] }}
+          msbuild-arguments: ${{ matrix['msbuild.arguments'] }}
       - name: dotnet test
         uses: ./def/dotnet-sdk
         with:
@@ -104,6 +109,7 @@ jobs:
           dotnet-arguments: |
             ${{ matrix['dotnet.test.arguments'] }}
             ${{ matrix['dotnet.test.arguments.runtime'] }}
+          msbuild-arguments: ${{ matrix['msbuild.arguments'] }}
       - name: Upload .NET Test Results
         uses: actions/upload-artifact@v2
         with:
@@ -120,6 +126,7 @@ jobs:
             [Ss]rc/**/*.*proj
           configuration: ${{ matrix['configuration.id'] }}
           runtime: ${{ matrix['runtime.id'] }}
+          msbuild-arguments: ${{ matrix['msbuild.arguments'] }}
       - name: Upload Nuget artifacts
         uses: actions/upload-artifact@v2
         with:
