@@ -104,6 +104,13 @@ jobs:
           dotnet-arguments: |
             ${{ matrix['dotnet.test.arguments'] }}
             ${{ matrix['dotnet.test.arguments.runtime'] }}
+      - name: Upload .NET Test Results
+        uses: actions/upload-artifact@v2
+        with:
+          name: ${{ github.repository_owner }}-${{ github.event.repository.name }}-testresults-${{ matrix.configuration }}${{ matrix['artifact.name.suffix'] }}
+          path: |
+            TestResults
+        continue-on-error: true
       - name: dotnet pack
         uses: ./def/dotnet-sdk
         with:
