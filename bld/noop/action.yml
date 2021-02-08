@@ -1,9 +1,0 @@
-name: "Do nothing"
-description: "A GitHub action that does not do anything"
-inputs: {}
-runs:
-  using: composite
-  steps: []
-branding:
-  icon: moon
-  color: white
