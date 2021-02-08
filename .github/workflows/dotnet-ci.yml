@@ -20,10 +20,6 @@ jobs:
           - windows
           - linux
           - macos
-        targetFramework:
-          - project
-          - netstandard2.0
-          - netstandard2.1
         exclude:
           - configuration: debug
             runtime: windows
@@ -31,17 +27,7 @@ jobs:
             runtime: linux
           - configuration: debug
             runtime: macos
-          - configuration: debug
-            targetFramework: netstandard2.0
-          - configuration: debug
-            targetFramework: netstandard2.1
         include:
-          - project.all: |
-              *.sln
-            project.pack: |
-              [Ss]rc/*/*.*proj
-            project.test: |
-              [Tt]ests?/*/*.*proj
           - configuration: debug
             configuration.id: Debug
             configuration.display: Debug
@@ -62,21 +48,7 @@ jobs:
             os: macos-latest
             runtime.id: osx-x64
             runtime.display: (macOS, 64-bit)
-          - targetFramework: netstandard2.0
-            targetFramework.id: netstandard2.0
-            targetFramework.display: for .NET Standard 2.0
-            project.all: |
-              src/THNETII.GitHubActions.Toolkit.Core/*.csproj
-            project.publish: |
-              src/THNETII.GitHubActions.Toolkit.Core/*.csproj
-          - targetFramework: netstandard2.1
-            targetFramework.id: netstandard2.1
-            targetFramework.display: for .NET Standard 2.1
-            project.all: |
-              src/THNETII.GitHubActions.Toolkit.Core/*.csproj
-            project.publish: |
-              src/THNETII.GitHubActions.Toolkit.Core/*.csproj
-    name: ${{ matrix['configuration.display'] }} ${{ matrix['runtime.display'] }} ${{ matrix['targetFramework.display'] }}
+    name: ${{ matrix['configuration.display'] }} ${{ matrix['runtime.display'] }}
     runs-on: ${{ matrix.os }}
     steps:
       - name: Chekout ${{ github.repository }}@${{ github.ref }}
@@ -91,54 +63,50 @@ jobs:
         uses: ./def/dotnet-sdk
         with:
           command: restore
-          project: ${{ matrix['project.all'] }}
+          project: |
+            [Rr]ef/**/*.*proj
+            [Ss]rc/**/*.*proj
+            [Tt]ests?/**/*.*proj
+            [Ss]amples?/**/*.*proj
           configuration: ${{ matrix['configuration.id'] }}
-          framework: ${{ matrix['targetFramework.id'] }}
           runtime: ${{ matrix['runtime.id'] }}
       - name: dotnet build
         uses: ./def/dotnet-sdk
         with:
           command: build
-          project: ${{ matrix['project.all'] }}
+          project: |
+            [Rr]ef/**/*.*proj
+            [Ss]rc/**/*.*proj
+            [Tt]ests?/**/*.*proj
+            [Ss]amples?/**/*.*proj
           configuration: ${{ matrix['configuration.id'] }}
-          framework: ${{ matrix['targetFramework.id'] }}
           runtime: ${{ matrix['runtime.id'] }}
       - name: dotnet test (non-Windows OS)
         uses: ./def/dotnet-sdk
-        if: ${{ runner.os != 'Windows' && matrix['targetFramework'] == 'project' }}
+        if: ${{ runner.os != 'Windows' }}
         with:
           command: test
-          project: ${{ matrix['project.test'] }}
+          project: |
+            [Tt]ests?/**/*.*proj
           configuration: ${{ matrix['configuration.id'] }}
-          framework: ${{ matrix['targetFramework.id'] }}
           runtime: ${{ matrix['runtime.id'] }}
       - name: dotnet test (Windows OS)
         uses: ./def/dotnet-sdk
-        if: ${{ runner.os == 'Windows' && matrix['targetFramework'] == 'project' }}
+        if: ${{ runner.os == 'Windows' }}
         with:
           command: test
-          project: ${{ matrix['project.test'] }}
+          project: |
+            [Tt]ests?/**/*.*proj
           configuration: ${{ matrix['configuration.id'] }}
-          framework: ${{ matrix['targetFramework.id'] }}
           runtime: ${{ matrix['runtime.id'] }}
           dotnet-arguments: |
             --collect
             Code Coverage
       - name: dotnet pack
         uses: ./def/dotnet-sdk
-        if: ${{ matrix['targetFramework'] == 'project' }}
         with:
           command: pack
-          project: ${{ matrix['project.pack'] }}
+          project: |
+            [Ss]rc/**/*.*proj
           configuration: ${{ matrix['configuration.id'] }}
-          framework: ${{ matrix['targetFramework.id'] }}
-          runtime: ${{ matrix['runtime.id'] }}
-      - name: dotnet publish
-        uses: ./def/dotnet-sdk
-        if: ${{ matrix['targetFramework'] != 'project' }}
-        with:
-          command: publish
-          project: ${{ matrix['project.publish'] }}
-          configuration: ${{ matrix['configuration.id'] }}
-          framework: ${{ matrix['targetFramework.id'] }}
           runtime: ${{ matrix['runtime.id'] }}
