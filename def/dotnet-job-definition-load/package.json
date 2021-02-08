@@ -14,7 +14,7 @@
   },
   "homepage": "https://github.com/thnetii/gh-actions#readme",
   "devDependencies": {
-    "@actions/core": "^1.2.5",
+    "@actions/core": "^1.2.6",
     "@types/node": "^14.11.1"
   },
   "dependencies": {
