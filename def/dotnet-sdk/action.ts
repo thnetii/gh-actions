@@ -88,16 +88,6 @@ glob.create(inputs.project).then(globber => {
   core.info(projGlobMessage);
 
   globber.glob().then(async projGlobResults => {
-    let projGlobResultMessage = 'Resolved project glob paths:';
-    if (projGlobResults.length) {
-      for (const projGlobResultPath of projGlobResults) {
-        projGlobResultMessage += EOL + '  - ' + projGlobResultPath;
-      }
-    } else {
-      projGlobResultMessage += ' []';
-    }
-    core.info(projGlobResultMessage);
-
     for (const projGlobResultPath of projGlobResults) {
       core.startGroup(projGlobResultPath);
       try {
