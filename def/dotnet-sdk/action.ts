@@ -85,6 +85,7 @@ glob.create(inputs.project).then(globber => {
   } else {
     projGlobMessage += ' []';
   }
+  core.info(projGlobMessage);
 
   globber.glob().then(async projGlobResults => {
     let projGlobResultMessage = 'Resolved project glob paths:';
