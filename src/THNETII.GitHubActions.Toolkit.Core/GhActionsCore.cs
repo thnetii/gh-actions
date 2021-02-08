@@ -1,12 +1,11 @@
 using System;
+using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
-using System.IO;
+using System.Text.Json;
 
 namespace THNETII.GitHubActions.Toolkit.Core
 {
-    using static GhActionsCommand;
-
     public static class GhActionsCore
     {
         #region Variables
@@ -15,12 +14,13 @@ namespace THNETII.GitHubActions.Toolkit.Core
         /// </summary>
         /// <param name="name">the name of the variable to set</param>
         /// <param name="val">the value of the variable. Non-string values will be converted to a JSON-string</param>
-        public static void ExportVariable<T>(string name, [MaybeNull] T val)
+        public static void ExportVariable<T>(string name, [MaybeNull] T val,
+            JsonSerializerOptions? serializerOptions = null)
         {
-            var convertedVal = ToCommandValue(val);
+            var convertedVal = GhWorkflowCommand.ToCommandValue(val, serializerOptions);
             Environment.SetEnvironmentVariable(name, convertedVal);
-            IssueCommand("set-env", message: val, properties:
-                new[] { ("name", (object?)name).AsKeyValuePair() });
+            IssueCommand(
+                GhWorkflowCommand.SetEnvironmentVariable(name, convertedVal));
         }
 
         /// <summary>
@@ -28,17 +28,7 @@ namespace THNETII.GitHubActions.Toolkit.Core
         /// </summary>
         /// <param name="secret">value of the secret</param>
         public static void SetSecret(string secret) =>
-            IssueCommand("add-mask", default, secret);
-
-        public static void AddPath(string inputPath)
-        {
-            var currentPath = Environment.GetEnvironmentVariable("PATH");
-            IssueCommand("add-path", default, inputPath);
-            var newPath = inputPath;
-            if (string.IsNullOrWhiteSpace(currentPath))
-                newPath = currentPath + Path.PathSeparator + newPath;
-            Environment.SetEnvironmentVariable("PATH", newPath);
-        }
+            IssueCommand(GhWorkflowCommand.MaskValueInLog(secret));
 
         /// <summary>
         /// Gets the value of an input. The value is also trimmed.
@@ -56,22 +46,12 @@ namespace THNETII.GitHubActions.Toolkit.Core
         }
 
         /// <summary>
-        /// Sets the value of an output.
-        /// </summary>
-        /// <param name="name">name of the output to set</param>
-        /// <param name="value">value to store. Non-string values will be converted to a JSON-string</param>
-        public static void SetOutput<T>(string name, [MaybeNull] T value) =>
-            IssueCommand("set-output", message: value, properties:
-                new[] { ("name", (object?)name).AsKeyValuePair() });
-
-
-        /// <summary>
         /// Enables or disables the echoing of commands into stdout for the rest of the step.
         /// Echoing is disabled by default if <c>ACTIONS_STEP_DEBUG</c> is not set.
         /// </summary>
         [SuppressMessage("Globalization", "CA1303: Do not pass literals as localized parameters")]
         public static void SetCommandEcho(bool enabled) =>
-            Issue("echo", enabled ? "on" : "off");
+            IssueCommand(new GhWorkflowCommand("echo", enabled ? "on" : "off"));
         #endregion
 
         #region Results
@@ -112,29 +92,39 @@ namespace THNETII.GitHubActions.Toolkit.Core
         /// </summary>
         /// <param name="message">debug message</param>
         public static void Debug(string message) =>
-            IssueCommand("debug", default, message);
+            IssueCommand(GhWorkflowCommand.DebugMessage(message));
 
         /// <summary>
         /// Adds an error issue
         /// </summary>
         /// <param name="message">error issue message</param>
         public static void Error(string message) =>
-            Issue("error", message);
+            IssueCommand(GhWorkflowCommand.ErrorMessage(message));
 
         /// <inheritdoc cref="Error(string)"/>
-        public static void Error(Exception exception) =>
-            IssueCommand("error", default, exception);
+        public static void Error(Exception exception,
+            JsonSerializerOptions? serializerOptions = null)
+        {
+            var message = GhWorkflowCommand.ToCommandValue(exception,
+                serializerOptions);
+            IssueCommand(GhWorkflowCommand.ErrorMessage(message));
+        }
 
         /// <summary>
         /// Adds an warning issue
         /// </summary>
         /// <param name="message">warning issue message</param>
         public static void Warning(string message) =>
-            Issue("warning", message);
+            IssueCommand(GhWorkflowCommand.WarningMessage(message));
 
         /// <inheritdoc cref="Warning(string)"/>
-        public static void Warning(Exception exception) =>
-            IssueCommand("warning", default, exception);
+        public static void Warning(Exception exception,
+            JsonSerializerOptions? serializerOptions = null)
+        {
+            var message = GhWorkflowCommand.ToCommandValue(exception,
+                serializerOptions);
+            IssueCommand(GhWorkflowCommand.WarningMessage(message));
+        }
 
         /// <summary>
         /// Writes info to log with <see cref="Console.WriteLine(string)"/>.
@@ -149,20 +139,26 @@ namespace THNETII.GitHubActions.Toolkit.Core
         /// </summary>
         /// <param name="name">The name of the output group</param>
         public static void StartGroup(string name) =>
-            Issue("group", name);
+            IssueCommand(new GhWorkflowCommand(
+                GhWorkflowCommandName.StartGroup, name));
 
         /// <summary>
         /// End an output group.
         /// </summary>
         public static void EndGroup() =>
-            Issue("endgroup");
+            IssueCommand(new GhWorkflowCommand(
+                GhWorkflowCommandName.EndGroup));
 
         /// <summary>
         /// Constructs an <see cref="IDisposable"/> instance that can be used in a using block.
         /// </summary>
         /// <param name="name">The name of the output group</param>
-        public static IDisposable Group(string name) =>
-            new GhLoggingGroupDisposable(name);
+        public static IDisposable Group(string name)
+        {
+            StartGroup(name);
+            return new GhDeferredCommandIssueDisposable(
+                new GhWorkflowCommand(GhWorkflowCommandName.EndGroup, name));
+        }
         #endregion
 
         #region Wrapper action state
@@ -171,9 +167,12 @@ namespace THNETII.GitHubActions.Toolkit.Core
         /// </summary>
         /// <param name="name">name of the state to store</param>
         /// <param name="value">value to store. Non-string values will be converted to a JSON-string</param>
-        public static void SaveState<T>(string name, [MaybeNull] T value) =>
-            IssueCommand("save-state", message: value, properties:
-                new[] { ("name", (object?)name).AsKeyValuePair() });
+        public static void SaveState<T>(string name, [MaybeNull] T value,
+            JsonSerializerOptions? serializerOptions = null) =>
+            IssueCommand(GhWorkflowCommand.Create(
+                GhWorkflowCommandName.SaveState, message: value, properties:
+                new[] { new KeyValuePair<string, object?>("name", name) },
+                serializerOptions: serializerOptions));
 
         /// <summary>
         /// Gets the value of an state set by this action's main execution.
@@ -182,5 +181,47 @@ namespace THNETII.GitHubActions.Toolkit.Core
         public static string? GetState<T>(string name) =>
             Environment.GetEnvironmentVariable("STATE_" + name);
         #endregion
+
+        #region Stopp Workflow commands
+        /// <summary>
+        /// Stops processing any workflow commands. This special command allows you to
+        /// log anything without accidentally running a workflow command. For example, you
+        /// could stop logging to output an entire script that has comments.
+        /// </summary>
+        /// <param name="resumeCommands">
+        /// On return, receives a workflow command that can be issued to resume
+        /// processing of workflow commands.
+        /// </param>
+        public static void StopCommands(out GhWorkflowCommand resumeCommands) =>
+            StopCommands(Guid.NewGuid().ToString("N"), out resumeCommands);
+
+        /// <inheritdoc cref="StopCommands(out GhWorkflowCommand)"/>
+        public static void StopCommands(string endtoken,
+            out GhWorkflowCommand resumeCommands)
+        {
+            if (string.IsNullOrEmpty(endtoken))
+                throw endtoken is null
+                    ? new ArgumentNullException(nameof(endtoken))
+                    : new ArgumentException(message: null, nameof(endtoken));
+
+            IssueCommand(new GhWorkflowCommand(
+                GhWorkflowCommandName.StopProcessing, endtoken));
+            resumeCommands = new GhWorkflowCommand(endtoken);
+        }
+
+        /// <inheritdoc cref="StopCommands(out GhWorkflowCommand)"/>
+        public static IDisposable SuppressCommandProcessing() =>
+            SuppressCommandProcessing(Guid.NewGuid().ToString("N"));
+
+        /// <inheritdoc cref="SuppressCommandProcessing()"/>
+        public static IDisposable SuppressCommandProcessing(string endtoken)
+        {
+            StopCommands(endtoken, out var resumeCommands);
+            return new GhDeferredCommandIssueDisposable(resumeCommands);
+        }
+        #endregion
+
+        public static void IssueCommand(GhWorkflowCommand command) =>
+            command?.Issue();
     }
 }
