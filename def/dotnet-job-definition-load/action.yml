@@ -1,0 +1,23 @@
+name: .NET Continuous Integration Job Definition Loader
+description: ''
+author: Fredrik Høisæther Rasch <fredrik.rasch@gmail.com>
+outputs:
+  definition:
+    description: The Job Definition formatted as a JSON object
+    value: ${{ fromJson(steps.run.outputs.definition) }}
+runs:
+  using: composite
+  steps:
+    - id: install
+      name: npm install
+      shell: pwsh
+      working-directory: $/bld/dotnet-job-definition-load
+      run: npm install
+    - id: run
+      name: node action.js
+      shell: pwsh
+      working-directory: $/bld/dotnet-job-definition-load
+      run: node action.js
+branding:
+  color: purple
+  icon: settings

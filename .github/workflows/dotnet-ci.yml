@@ -70,9 +70,9 @@ jobs:
         with:
           submodules: recursive
       - name: .NET Version Information
-        uses: ./bld/dotnet-version
+        uses: ./def/dotnet-version
       - name: dotnet restore
-        uses: ./bld/dotnet-sdk
+        uses: ./def/dotnet-sdk
         with:
           command: restore
           project: |
@@ -81,7 +81,7 @@ jobs:
           framework: ${{ matrix['targetFramework.id'] }}
           runtime: ${{ matrix['runtime.id'] }}
       - name: dotnet build
-        uses: ./bld/dotnet-sdk
+        uses: ./def/dotnet-sdk
         with:
           command: build
           project: |

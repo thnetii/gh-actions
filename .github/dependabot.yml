@@ -18,3 +18,9 @@ updates:
       interval: "daily"
     assignees:
       - "fredrikhr"
+  - package-ecosystem: "npm"
+    directory: "/def/dotnet-sdk"
+    schedule:
+      interval: "daily"
+    assignees:
+      - "fredrikhr"
