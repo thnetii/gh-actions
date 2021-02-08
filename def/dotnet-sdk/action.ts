@@ -89,27 +89,30 @@ glob.create(inputs.project).then(globber => {
 
   globber.glob().then(async projGlobResults => {
     for (const projGlobResultPath of projGlobResults) {
-      core.startGroup(projGlobResultPath);
       try {
-        let invokeArguments = [];
-        invokeArguments.push(...preProjectArguments);
-        invokeArguments.push(projGlobResultPath);
-        invokeArguments.push(...postProjectArguments);
-        if (inputs.binlogDir) {
-          const binlogFileName = `${path.basename(projGlobResultPath)}.${inputs.command}.binlog`;
-          const binlogFilePath = path.join(inputs.binlogDir, binlogFileName);
-          let binlogArg = `-bl:${path.normalize(binlogFilePath)}`;
-          invokeArguments.push(binlogArg);
-        }
+        const invokeResult = await core.group(projGlobResultPath, async () => {
+          let invokeArguments = [];
+          invokeArguments.push(...preProjectArguments);
+          invokeArguments.push(projGlobResultPath);
+          invokeArguments.push(...postProjectArguments);
+          if (inputs.binlogDir) {
+            const binlogFileName = `${path.basename(projGlobResultPath)}.${inputs.command}.binlog`;
+            const binlogFilePath = path.join(inputs.binlogDir, binlogFileName);
+            let binlogArg = `-bl:${path.normalize(binlogFilePath)}`;
+            invokeArguments.push(binlogArg);
+          }
 
-        try {
-          await exec.exec('dotnet', invokeArguments);
-        } catch (e) {
-          core.setFailed(e);
+          return await exec.exec('dotnet', invokeArguments);
+        });
+
+        if (invokeResult != 0) {
+          core.setFailed(`Command terminated with non-zero exit code: ${invokeResult}.`);
           return;
         }
+      } catch (e) {
+        core.setFailed(e);
+        return;
       }
-      finally { core.endGroup(); }
     }
   });
 });
