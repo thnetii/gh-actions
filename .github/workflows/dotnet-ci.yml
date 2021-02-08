@@ -28,6 +28,12 @@ jobs:
           - configuration: debug
             runtime: macos
         include:
+          - dotnet.test.arguments: |
+              --logger
+              trx
+              --results-directory
+              ./TestResults
+
           - configuration: debug
             configuration.id: Debug
             configuration.display: Debug
@@ -36,6 +42,9 @@ jobs:
             configuration.display: Release
           - runtime: agnostic
             os: windows-latest
+            dotnet.test.arguments.runtime: |
+              --collect
+              Code Coverage
           - runtime: windows
             os: windows-latest
             runtime.id: win10-x64
@@ -81,18 +90,8 @@ jobs:
             [Ss]amples?/**/*.*proj
           configuration: ${{ matrix['configuration.id'] }}
           runtime: ${{ matrix['runtime.id'] }}
-      - name: dotnet test (non-Windows OS)
+      - name: dotnet test
         uses: ./def/dotnet-sdk
-        if: ${{ runner.os != 'Windows' }}
-        with:
-          command: test
-          project: |
-            [Tt]ests?/**/*.*proj
-          configuration: ${{ matrix['configuration.id'] }}
-          runtime: ${{ matrix['runtime.id'] }}
-      - name: dotnet test (Windows OS)
-        uses: ./def/dotnet-sdk
-        if: ${{ runner.os == 'Windows' }}
         with:
           command: test
           project: |
@@ -100,8 +99,8 @@ jobs:
           configuration: ${{ matrix['configuration.id'] }}
           runtime: ${{ matrix['runtime.id'] }}
           dotnet-arguments: |
-            --collect
-            Code Coverage
+            ${{ matrix['dotnet.test.arguments'] }}
+            ${{ matrix['dotnet.test.arguments.runtime'] }}
       - name: dotnet pack
         uses: ./def/dotnet-sdk
         with:
