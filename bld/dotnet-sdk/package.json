@@ -1,0 +1,24 @@
+{
+  "name": "dotnet-sdk",
+  "version": "0.0.0",
+  "description": "The JavaScript code for the dotnet-sdk GitHub action",
+  "main": "action.js",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/thnetii/gh-actions.git"
+  },
+  "author": "Fredrik Høisæther Rasch <fredrik.rasch@gmail.com>",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/thnetii/gh-actions/issues"
+  },
+  "homepage": "https://github.com/thnetii/gh-actions#readme",
+  "devDependencies": {
+    "@actions/core": "^1.2.6",
+    "@actions/exec": "^1.0.4",
+    "@actions/glob": "^0.1.1",
+    "@types/node": "^12.19.16",
+    "typescript": "^4.1.3"
+  },
+  "dependencies": {}
+}

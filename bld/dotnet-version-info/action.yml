@@ -1,0 +1,17 @@
+name: .NET Version Information
+description: Displays the .NET SDK version information and the version of MSBuild that is in use.
+runs:
+  using: composite
+  steps:
+    - shell: pwsh
+      run: |
+        Write-Host "::group::dotnet --info"
+        & dotnet --info
+        Write-Host "::endgroup::"
+        Write-Host "::group::dotnet msbuild -version"
+        & dotnet msbuild -version
+        Write-Host "::endgroup::"
+author: Fredrik Høisæther Rasch <fredrik.rasch@gmail.com>
+branding:
+  color: purple
+  icon: info

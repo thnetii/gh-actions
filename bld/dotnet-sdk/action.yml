@@ -1,0 +1,94 @@
+name: ''
+description: ''
+inputs:
+  command:
+    description: |
+      The dotnet SDK command to invoke.
+      * restore
+      * build
+      * test
+      * pack
+      * publish
+      * msbuild
+    required: true
+  project:
+    description: |
+      One or more glob patterns for the project or solution file to operate on.
+    required: true
+    default: ${{ github.workspace }}
+  configuration:
+    description: |
+      The MSBuild configuration to use for the project.
+      Appends: `--configuration <value>` to the invoked commandline
+
+      Note: If `command` is none of (`build`, `pack`, `publish`, `test`) appends `-property:Configuration=<value>` to the MSBuild arguments instead.
+    required: false
+  framework:
+    description: |
+      The Target Framework to use for the project.
+      Appends: `--framework <value>` to the invoked commandline
+
+      Note: If `command` is none of (`build`, `publish`, `test`) appends `-property:TargetFramework=<value>` to the MSBuild arguments instead.
+    required: false
+  runtime:
+    description: |
+      The Target Runtime Identifier to use for the project.
+      Appends: `--runtime <value>` to the invoked commandline
+
+      Note: If `command` is none of (`build`, `pack`, `publish`, `test`) appends `-property:RuntimeIdentifier=<value>` to the MSBuild arguments instead.
+    required: false
+  nuget-source:
+    description: |
+      The NuGet package source to use for packge restore.
+      Appends: `--source <value>` if `command` == `restore`.
+      Else: appends `-property:RestoreSources=<value>` to the MSBuild arguments instead.
+    required: false
+  nuget-packages-dir:
+    description: |
+      The directory to which packages are restored to.
+      Appends: `--source <value>` if `command` == `restore`.
+      Else: appends `-property:RestorePackagesPath=<value>` to the MSBuild arguments instead.
+    required: false
+  nuget-configfile:
+    description: |
+      The NuGet configuration file to use.
+      Appends: `--configfile <value>` if `command` == `restore`.
+      Else: appends `-property:RestoreConfigFile=<value>` to the MSBuild arguments instead.
+    required: false
+  dotnet-arguments:
+    description: |
+      One line per argument to pass to the dotnet CLI command before the project file name is added.
+      Each line will be quoted automatically as appropriate.
+      Note: if the configuration, runtime and/or framework inputs are used, the argument input should not include an argument for these, they are added automatically.
+    required: false
+  msbuild-arguments:
+    description: |
+      One line per argument to pass to the msbuild arguments after the project file name is added.
+      Each line will be quoted automatically as appropriate.
+      Note: if the configuration, runtime and/or framework inputs are used, the argument input should not include an argument for these, they are added automatically.
+    required: false
+  verbosity:
+    description: |
+      The MSBuild verbosity level: Allowed values are q[uiet], m[inimal], n[ormal], d[etailed], and diag[nostic].
+    required: false
+  binary-log-directory:
+    description: |
+      The directory in which to place MSBuild binary log files.
+      Will add the argument -bl:<filename> to the dotnet CLI invocation.
+      The MSBuild binlog file will be named according to the project or solution file name resolved by glob and suffixed with the command name.
+      Eg: -bl:MySolution.build.binlog
+    required: false
+outputs: {}
+runs:
+  using: composite
+  steps:
+    - shell: pwsh
+      run: npm install
+    - shell: pwsh
+      run: npx tsc action.ts
+    - shell: pwsh
+      run: node action.js
+author: Fredrik Høisæther Rasch <fredrik.rasch@gmail.com>
+branding:
+  color: purple
+  icon: package

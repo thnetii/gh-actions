@@ -1,11 +1,8 @@
 name: .NET Continuous Integration
 
 on:
-  pull_request: {}
-  push:
-    branches:
-      - master
-      - releases/**
+  - pull_request
+  - push
 
 defaults:
   run:
@@ -40,23 +37,30 @@ jobs:
             targetFramework: netstandard2.1
         include:
           - configuration: debug
+            configuration.id: Debug
             configuration.display: Debug
           - configuration: release
+            configuration.id: Release
             configuration.display: Release
           - runtime: agnostic
             os: windows-latest
           - runtime: windows
             os: windows-latest
+            runtime.id: win10-x64
             runtime.display: (Windows, 64-bit)
           - runtime: linux
             os: ubuntu-latest
+            runtime.id: linux-x64
             runtime.display: (Linux, 64-bit)
           - runtime: macos
             os: macos-latest
+            runtime.id: osx-x64
             runtime.display: (macOS, 64-bit)
           - targetFramework: netstandard2.0
+            targetFramework.id: netstandard2.0
             targetFramework.display: for .NET Standard 2.0
           - targetFramework: netstandard2.1
+            targetFramework.id: netstandard2.1
             targetFramework.display: for .NET Standard 2.1
     name: ${{ matrix['configuration.display'] }} ${{ matrix['runtime.display'] }} ${{ matrix['targetFramework.display'] }}
     runs-on: ${{ matrix.os }}
@@ -66,6 +70,22 @@ jobs:
         with:
           submodules: recursive
       - name: .NET Version Information
-        run: |
-          dotnet --info
-          dotnet msbuild -version
+        uses: ${{ github.repository }}/bld/dotnet-version@{{ github.sha }}
+      - name: dotnet restore
+        uses: ${{ github.repository }}/bld/dotnet-sdk@{{ github.sha }}
+        with:
+          command: restore
+          project: |
+            *.sln
+          configuration: ${{ matrix['configuration.id'] }}
+          framework: ${{ matrix['targetFramework.id'] }}
+          runtime: ${{ matrix['runtime.id'] }}
+      - name: dotnet build
+        uses: ${{ github.repository }}/bld/dotnet-sdk@{{ github.sha }}
+        with:
+          command: build
+          project: |
+            *.sln
+          configuration: ${{ matrix['configuration.id'] }}
+          framework: ${{ matrix['targetFramework.id'] }}
+          runtime: ${{ matrix['runtime.id'] }}
