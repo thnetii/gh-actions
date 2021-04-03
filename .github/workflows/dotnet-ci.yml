@@ -143,3 +143,22 @@ jobs:
           path: |
             bin/${{ matrix['configuration.id'] }}/**/*.nupkg
             bin/${{ matrix['configuration.id'] }}/**/*.snupkg
+      - name: dotnet publish
+        if: ${{ matrix['runtime'] != 'agnostic' }}
+        uses: ./def/dotnet-sdk
+        with:
+          command: build
+          project: |
+            [Ss]rc/**/*.*proj
+          configuration: ${{ matrix['configuration.id'] }}
+          runtime: ${{ matrix['runtime.id'] }}
+          dotnet-arguments: --nologo
+          msbuild-arguments: |
+            -property:InnerTargets=Publish
+            ${{ matrix['msbuild.arguments'] }}
+      - name: Upload Build Publish artifacts
+        if: ${{ matrix['runtime'] == 'agnostic' }}
+        uses: actions/upload-artifact@v2
+        with:
+          name: ${{ github.repository_owner }}-${{ github.event.repository.name }}-publish-${{ matrix.configuration }}${{ matrix['artifact.name.suffix'] }}
+          path: publish
