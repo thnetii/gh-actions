@@ -1,57 +1,37 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Project>
-  <Import Condition="Exists('$(MSBuildThisFileDirectory)\Directory.Meta.props')" Project="$(MSBuildThisFileDirectory)\Directory.Meta.props" />
-  <PropertyGroup Condition="'$(Configuration)'=='Debug'">
-    <DebugType>portable</DebugType>
+  <PropertyGroup Label="BasePath">
+    <BaseOutputPath>$(MSBuildThisFileDirectory)bin\$(MSBuildProjectName)\</BaseOutputPath>
+    <BaseIntermediateOutputPath>$(MSBuildThisFileDirectory)obj\$(MSBuildProjectName)\</BaseIntermediateOutputPath>
   </PropertyGroup>
- <PropertyGroup Label="C# Language Version">
-  <LangVersion>8</LangVersion>
- </PropertyGroup>
+  
   <PropertyGroup>
-    <TargetFramework Condition="'$(BuildDefaultTargetFramework)'!=''">netstandard2.0</TargetFramework>
+    <LangVersion>8</LangVersion>
+    <Nullable>enable</Nullable>
   </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)'=='Debug'">
+    <DebugType Condition=" '$(DebugType)' == '' ">portable</DebugType>
+  </PropertyGroup>
+
   <PropertyGroup>
     <PublishRepositoryUrl>true</PublishRepositoryUrl>
     <EmbedUntrackedSources>true</EmbedUntrackedSources>
     <IncludeSymbols>true</IncludeSymbols>
     <SymbolPackageFormat>snupkg</SymbolPackageFormat>
   </PropertyGroup>
-  <PropertyGroup Label="BasePath">
-    <BaseOutputPath>$(MSBuildThisFileDirectory)bin\</BaseOutputPath>
-    <BaseIntermediateOutputPath>$(MSBuildThisFileDirectory)obj\$(MSBuildProjectName)\</BaseIntermediateOutputPath>
-    <PublishDir>$(MSBuildThisFileDirectory)publish\$(MSBuildProjectName)\</PublishDir>
-  </PropertyGroup>
-  <PropertyGroup>
-    <Features>IOperation</Features>
-    <CodeAnalysisRuleSet>$(MSBuildThisFileDirectory)AllRules.ruleset</CodeAnalysisRuleSet>
-  </PropertyGroup>
-  <Import Label="Version"
-          Condition="
-          '$(VersionPrefix)'=='' and
-          Exists('$(MSBuildThisFileDirectory)Directory.Version.props')
-          "
-          Project="$(MSBuildThisFileDirectory)Directory.Version.props"/>
-  <PropertyGroup Label="Version" Condition="'$(VersionPrefix)'!=''">
-    <FileVersion>$(VersionPrefix)</FileVersion>
-    <AssemblyVersion>$(FileVersion)</AssemblyVersion>
-  </PropertyGroup>
-  <PropertyGroup Label="CI Build" Condition="'$(BuildId)'!='' and !('$(Configuration)'=='Release' and ($(BuildSourceBranch.StartsWith('refs/heads/rel/')) or $(BuildSourceBranch.StartsWith('rel/'))))">
-    <VersionSuffix Condition="'$(VersionSuffix)'!=''">$(VersionSuffix)-build$(BuildId)</VersionSuffix>
-    <VersionSuffix Condition="'$(VersionSuffix)'==''">build$(BuildId)</VersionSuffix>
-  </PropertyGroup>
-  <PropertyGroup Label="CI Build" Condition="'$(BuildId)'!=''">
-    <AssemblyVersion Condition="'$(FileVersion)'!=''">$(FileVersion).$(BuildId)</AssemblyVersion>
-  </PropertyGroup>
+
   <ItemGroup>
-    <PackageReference Include="Microsoft.CodeAnalysis.FxCopAnalyzers" Version="3.3.2" PrivateAssets="All" />
-    <PackageReference Include="Microsoft.DotNet.Analyzers.Compatibility" Version="0.2.12-alpha" PrivateAssets="All" />
-  </ItemGroup>
-  <ItemGroup Label="SourceLink">
-    <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.0.0">
-      <PrivateAssets>All</PrivateAssets>
+    <PackageReference Include="Microsoft.CodeAnalysis.FxCopAnalyzers" Version="3.3.0">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers</IncludeAssets>
     </PackageReference>
-  </ItemGroup>
-  <ItemGroup Label="Nullable helper library for Pre-.NET Standard 2.1">
-    <PackageReference Include="Nullable" Version="1.3.0" PrivateAssets="All" />
+    <PackageReference Include="Nullable" Version="1.3.0">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers</IncludeAssets>
+    </PackageReference>
+    <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.0.0">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers</IncludeAssets>
+    </PackageReference>
   </ItemGroup>
 </Project>

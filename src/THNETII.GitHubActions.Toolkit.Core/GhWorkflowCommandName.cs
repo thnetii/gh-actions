@@ -1,4 +1,4 @@
-﻿namespace THNETII.GitHubActions.Toolkit.Core
+namespace THNETII.GitHubActions.Toolkit.Core
 {
     public static class GhWorkflowCommandName
     {
