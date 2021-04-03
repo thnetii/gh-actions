@@ -6,16 +6,19 @@
     <ItemGroup>
       <_SourceRootReverseOrder Include="@(SourceRoot->HasMetadata('SourceControl')->Reverse())" />
     </ItemGroup>
-    
+
     <PropertyGroup>
-      <PublishDir Condition=" '$(TargetFramework)' == '' AND '$(RuntimeIdentifier)' == ''"
-        >%(_SourceRootReverseOrder.Identity)publish\$(MSBuildProjectName)\$(Configuration)\</PublishDir>
-      <PublishDir Condition=" '$(TargetFramework)' != '' AND '$(RuntimeIdentifier)' == ''"
-        >%(_SourceRootReverseOrder.Identity)publish\$(MSBuildProjectName)\$(Configuration)\$(TargetFramework)\</PublishDir>
-      <PublishDir Condition=" '$(TargetFramework)' != '' AND '$(RuntimeIdentifier)' != ''"
-        >%(_SourceRootReverseOrder.Identity)publish\$(MSBuildProjectName)\$(Configuration)\$(TargetFramework)\$(RuntimeIdentifier)\</PublishDir>
-      <PublishDir Condition=" '$(TargetFramework)' == '' AND '$(RuntimeIdentifier)' != ''"
-        >%(_SourceRootReverseOrder.Identity)publish\$(MSBuildProjectName)\$(Configuration)\$(RuntimeIdentifier)\</PublishDir>
+      <PublishDir>%(_SourceRootReverseOrder.Identity)publish\$(MSBuildProjectName)\</PublishDir>
+    </PropertyGroup>
+
+    <PropertyGroup>
+      <PublishDir>$(PublishDir)$(Configuration)\</PublishDir>
+      <PublishDir Condition=" '$(PlatformName)' != '' and '$(PlatformName)' != 'AnyCPU' "
+        >$(PublishDir)$(PlatformName)\</PublishDir>
+      <PublishDir Condition=" '$(TargetFramework)' != '' "
+        >$(PublishDir)$(TargetFramework)\</PublishDir>
+      <PublishDir Condition=" '$(RuntimeIdentifier)' != '' "
+        >$(PublishDir)$(RuntimeIdentifier)\</PublishDir>
     </PropertyGroup>
   </Target>
 
@@ -66,7 +69,7 @@
     <ItemGroup>
       <_SourceRootReverseOrder Include="@(SourceRoot->HasMetadata('SourceControl')->Reverse())" />
     </ItemGroup>
-    
+
     <PropertyGroup>
       <_SourceRootLicenseFilePath>%(_SourceRootReverseOrder.Identity)LICENSE</_SourceRootLicenseFilePath>
     </PropertyGroup>
