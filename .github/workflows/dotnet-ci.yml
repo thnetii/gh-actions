@@ -152,8 +152,8 @@ jobs:
         with:
           name: ${{ github.repository_owner }}-${{ github.event.repository.name }}-nupkg-${{ matrix.configuration }}${{ matrix['artifact.name.suffix'] }}
           path: |
-            bin/${{ matrix['configuration.id'] }}/**/*.nupkg
-            bin/${{ matrix['configuration.id'] }}/**/*.snupkg
+            bin/*/${{ matrix['configuration.id'] }}/*.nupkg
+            bin/*/${{ matrix['configuration.id'] }}/*.snupkg
       - name: dotnet publish
         id: dotnet_publish
         if: ${{ env['DOTNET_CI_PUBLISH_TASK'] == 'true' }}
