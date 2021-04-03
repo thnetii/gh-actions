@@ -15,7 +15,18 @@ jobs:
     name: Publish NuGet package
     runs-on: ubuntu-latest
     steps:
-      - name: Dump GitHub context
-        env:
-          GITHUB_CONTEXT: ${{ toJSON(github) }}
-        run: echo "$GITHUB_CONTEXT"
+      - name: Download artifact
+        uses: dawidd6/action-download-artifact@v2
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          run_id: ${{ github.event.workflow_run.id }}
+          name: ${{ github.event.workflow_run.repository.owner.login }}-${{ github.event.workflow_run.repository.name }}-nupkg-release
+          repo: ${{ github.repository }}
+      - name: Publish NuGet packages
+        shell: pwsh
+        run: |
+          Get-ChildItem -File -Filter *.nupkg | ForEach-Object {
+            Write-Host $_
+            Write-Host dotnet nuget push $_ --source https://nuget.pkg.github.com/thnetii/index.json --api-key ${{ secrets.GITHUB_TOKEN }}
+          }
+
