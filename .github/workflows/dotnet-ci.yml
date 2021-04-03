@@ -76,6 +76,16 @@ jobs:
           submodules: recursive
       - name: Prepare .NET SDK action
         uses: ./def/dotnet-sdk/prepare
+      - name: Determine Package and Publishing
+        shell: pwsh
+        run: |
+          $packageTaskEnv = "DOTNET_CI_PACKAGE_TASK=${{ matrix['runtime'] == 'agnostic' }}"
+          Write-Host $packageTaskEnv
+          $packageTaskEnv | Out-File -LiteralPath $Env:GITHUB_ENV -Append -Encoding utf8
+
+          $publishTaskEnv = "DOTNET_CI_PUBLISH_TASK=${{ matrix['runtime'] != 'agnostic' }}"
+          Write-Host $publishTaskEnv
+          $publishTaskEnv | Out-File -LiteralPath $Env:GITHUB_ENV -Append -Encoding utf8
       - name: .NET Version Information
         uses: ./def/dotnet-version-info
       - name: dotnet restore
@@ -125,7 +135,8 @@ jobs:
           if-no-files-found: ignore
         continue-on-error: true
       - name: dotnet pack
-        if: ${{ matrix['runtime'] == 'agnostic' }}
+        id: dotnet_pack
+        if: ${{ env['DOTNET_CI_PACKAGE_TASK'] == 'true' }}
         uses: ./def/dotnet-sdk
         with:
           command: pack
@@ -136,7 +147,7 @@ jobs:
           dotnet-arguments: --nologo
           msbuild-arguments: ${{ matrix['msbuild.arguments'] }}
       - name: Upload Nuget artifacts
-        if: ${{ matrix['runtime'] == 'agnostic' }}
+        if: ${{ steps.dotnet_pack.outcome == 'success' }}
         uses: actions/upload-artifact@v2
         with:
           name: ${{ github.repository_owner }}-${{ github.event.repository.name }}-nupkg-${{ matrix.configuration }}${{ matrix['artifact.name.suffix'] }}
@@ -144,7 +155,8 @@ jobs:
             bin/${{ matrix['configuration.id'] }}/**/*.nupkg
             bin/${{ matrix['configuration.id'] }}/**/*.snupkg
       - name: dotnet publish
-        if: ${{ matrix['runtime'] != 'agnostic' }}
+        id: dotnet_publish
+        if: ${{ env['DOTNET_CI_PUBLISH_TASK'] == 'true' }}
         uses: ./def/dotnet-sdk
         with:
           command: build
@@ -157,7 +169,7 @@ jobs:
             -property:InnerTargets=Publish
             ${{ matrix['msbuild.arguments'] }}
       - name: Upload Build Publish artifacts
-        if: ${{ matrix['runtime'] == 'agnostic' }}
+        if: ${{ steps.dotnet_publish.outcome == 'success' }}
         uses: actions/upload-artifact@v2
         with:
           name: ${{ github.repository_owner }}-${{ github.event.repository.name }}-publish-${{ matrix.configuration }}${{ matrix['artifact.name.suffix'] }}
