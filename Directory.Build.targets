@@ -29,8 +29,8 @@
           >
     <PropertyGroup Condition="!(
                     '$(Configuration)' == 'Release' AND (
-                      $(BuildSourceBranch.StartsWith('refs/heads/rel/')) OR
-                      $(BuildSourceBranch.StartsWith('rel/'))
+                      $(BuildSourceBranch.StartsWith('refs/heads/releases/')) OR
+                      $(BuildSourceBranch.StartsWith('releases/'))
                     ))">
       <!-- Follow SemVer 2.0 rules -->
       <_InformationalVersionContainsHyphen>false</_InformationalVersionContainsHyphen>
