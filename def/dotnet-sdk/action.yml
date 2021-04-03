@@ -1,5 +1,5 @@
-name: ''
-description: ''
+name: '.NET SDK'
+description: 'Invokes the specified .NET SDK command using the .NET CLI.'
 inputs:
   command:
     description: |
