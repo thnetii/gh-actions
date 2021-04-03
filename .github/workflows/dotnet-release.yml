@@ -1,0 +1,21 @@
+name: .NET Continuous Integration Release
+
+on:
+  workflow_run:
+    workflows:
+      - .NET Continuous Integration
+    types:
+      - completed
+    branches:
+      - main
+      - releases/**
+
+jobs:
+  nupkg:
+    name: Publish NuGet package
+    runs-on: ubuntu-latest
+    steps:
+      - name: Dump GitHub context
+        env:
+          GITHUB_CONTEXT: ${{ toJSON(github) }}
+        run: echo "$GITHUB_CONTEXT"
