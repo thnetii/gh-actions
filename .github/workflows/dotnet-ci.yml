@@ -125,6 +125,7 @@ jobs:
           if-no-files-found: ignore
         continue-on-error: true
       - name: dotnet pack
+        if: ${{ matrix['runtime'] == 'agnostic' }}
         uses: ./def/dotnet-sdk
         with:
           command: pack
@@ -135,6 +136,7 @@ jobs:
           dotnet-arguments: --nologo
           msbuild-arguments: ${{ matrix['msbuild.arguments'] }}
       - name: Upload Nuget artifacts
+        if: ${{ matrix['runtime'] == 'agnostic' }}
         uses: actions/upload-artifact@v2
         with:
           name: ${{ github.repository_owner }}-${{ github.event.repository.name }}-nupkg-${{ matrix.configuration }}${{ matrix['artifact.name.suffix'] }}
