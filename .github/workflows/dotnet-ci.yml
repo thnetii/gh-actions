@@ -146,16 +146,16 @@ jobs:
             [Ss]rc/**/*.*proj
           configuration: ${{ matrix['configuration.id'] }}
           runtime: ${{ matrix['runtime.id'] }}
-          dotnet-arguments: --nologo
+          dotnet-arguments: |
+            --nologo
+            --output packages/bld
           msbuild-arguments: ${{ matrix['msbuild.arguments'] }}
       - name: Upload Nuget artifacts
         if: ${{ steps.dotnet_pack.outcome == 'success' }}
         uses: actions/upload-artifact@v2
         with:
           name: ${{ github.repository_owner }}-${{ github.event.repository.name }}-nupkg-${{ matrix.configuration }}${{ matrix['artifact.name.suffix'] }}
-          path: |
-            bin/*/${{ matrix['configuration.id'] }}/*.nupkg
-            bin/*/${{ matrix['configuration.id'] }}/*.snupkg
+          path: packages/bld
       - name: dotnet publish
         id: dotnet_publish
         if: ${{ env['DOTNET_CI_PUBLISH_TASK'] == 'true' }}
