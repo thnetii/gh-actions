@@ -78,16 +78,6 @@ jobs:
         uses: ./def/typescript-action-prepare
         with:
           action-name: dotnet-sdk
-      - name: Determine Package and Publishing
-        shell: pwsh
-        run: |
-          $packageTaskEnv = "DOTNET_CI_PACKAGE_TASK=${{ matrix['runtime'] == 'agnostic' }}"
-          Write-Host $packageTaskEnv
-          $packageTaskEnv | Out-File -LiteralPath $Env:GITHUB_ENV -Append -Encoding utf8
-
-          $publishTaskEnv = "DOTNET_CI_PUBLISH_TASK=${{ matrix['runtime'] != 'agnostic' }}"
-          Write-Host $publishTaskEnv
-          $publishTaskEnv | Out-File -LiteralPath $Env:GITHUB_ENV -Append -Encoding utf8
       - name: .NET Version Information
         uses: ./def/dotnet-version-info
       - name: dotnet restore
@@ -136,6 +126,16 @@ jobs:
             TestResults
           if-no-files-found: ignore
         continue-on-error: true
+      - name: Determine Package and Publishing
+        shell: pwsh
+        run: |
+          $packageTaskEnv = "DOTNET_CI_PACKAGE_TASK=${{ matrix['runtime'] == 'agnostic' }}"
+          Write-Host $packageTaskEnv
+          $packageTaskEnv | Out-File -LiteralPath $ENV:GITHUB_ENV -Append -Encoding utf8
+
+          $publishTaskEnv = "DOTNET_CI_PUBLISH_TASK=${{ matrix['runtime'] != 'agnostic' }}"
+          Write-Host $publishTaskEnv
+          $publishTaskEnv | Out-File -LiteralPath $ENV:GITHUB_ENV -Append -Encoding utf8
       - name: dotnet pack
         id: dotnet_pack
         if: ${{ env['DOTNET_CI_PACKAGE_TASK'] == 'true' }}
