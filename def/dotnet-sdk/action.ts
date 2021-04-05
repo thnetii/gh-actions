@@ -19,8 +19,6 @@ const inputs = {
   binlogDir: core.getInput('binary-log-directory', { required: false })
 };
 
-console.log(inputs);
-
 let preProjectArguments = [
   inputs.command,
   ...inputs.dotnet_arguments
@@ -75,7 +73,8 @@ if (inputs.verbosity) {
   preProjectArguments.push('--verbosity', inputs.verbosity);
 }
 
-glob.create(inputs.project).then(globber => {
+const asyncMain = async () => {
+  const globber = await glob.create(inputs.project);
   const projGlobs = inputs.project.split('\n');
   let projGlobMessage = 'Input project glob patterns:';
   if (projGlobs.length) {
@@ -87,32 +86,32 @@ glob.create(inputs.project).then(globber => {
   }
   core.info(projGlobMessage);
 
-  globber.glob().then(async projGlobResults => {
-    for (const projGlobResultPath of projGlobResults) {
-      try {
-        const invokeResult = await core.group(projGlobResultPath, async () => {
-          let invokeArguments = [];
-          invokeArguments.push(...preProjectArguments);
-          invokeArguments.push(projGlobResultPath);
-          invokeArguments.push(...postProjectArguments);
-          if (inputs.binlogDir) {
-            const binlogFileName = `${path.basename(projGlobResultPath)}.${inputs.command}.binlog`;
-            const binlogFilePath = path.join(inputs.binlogDir, binlogFileName);
-            let binlogArg = `-bl:${path.normalize(binlogFilePath)}`;
-            invokeArguments.push(binlogArg);
-          }
-
-          return await exec.exec('dotnet', invokeArguments);
-        });
-
-        if (invokeResult != 0) {
-          core.setFailed(`Command terminated with non-zero exit code: ${invokeResult}.`);
-          return;
+  const projGlobResults = await globber.glob();
+  for (const projGlobResultPath of projGlobResults) {
+    try {
+      const invokeResult = await core.group(projGlobResultPath, async () => {
+        let invokeArguments = [];
+        invokeArguments.push(...preProjectArguments);
+        invokeArguments.push(projGlobResultPath);
+        invokeArguments.push(...postProjectArguments);
+        if (inputs.binlogDir) {
+          const binlogFileName = `${path.basename(projGlobResultPath)}.${inputs.command}.binlog`;
+          const binlogFilePath = path.join(inputs.binlogDir, binlogFileName);
+          let binlogArg = `-bl:${path.normalize(binlogFilePath)}`;
+          invokeArguments.push(binlogArg);
         }
-      } catch (e) {
-        core.setFailed(e);
+
+        return await exec.exec('dotnet', invokeArguments);
+      });
+
+      if (invokeResult != 0) {
+        core.setFailed(`Command terminated with non-zero exit code: ${invokeResult}.`);
         return;
       }
+    } catch (e) {
+      core.setFailed(e);
+      return;
     }
-  });
-});
+  }
+};
+asyncMain();
