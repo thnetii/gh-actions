@@ -7,7 +7,6 @@ on:
     types:
       - completed
     branches:
-      - main
       - releases/**
 
 jobs:
@@ -34,4 +33,3 @@ jobs:
         uses: ./def/dotnet-nuget-push
         with:
           path: artifacts/**/*.nupkg
-          # api-key: ${{ github.token }}
