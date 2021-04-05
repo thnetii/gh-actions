@@ -31,6 +31,8 @@ const asyncMain = async () => {
       core.debug(`${symbolsPathString}: ${err}`);
     }
 
+    execArgs.push('--source', inputs.source);
+
     if (inputs.api_key)
       execArgs.push('--api-key', inputs.api_key);
 
