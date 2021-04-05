@@ -1,0 +1,25 @@
+name: '.NET Push NuGet package'
+description: 'Invokes the .NET CLI nuget command to push a NuGet packge to a NuGet server'
+inputs:
+  path:
+    required: true
+    description: Glob pattern to search for nuget packages.
+    default: '**/*.nupkg'
+  api-key:
+    required: false
+    default: ${{ secrets.GITHUB_TOKEN }}
+    description: The NuGet server API key to use
+  source:
+    required: true
+    default: https://nuget.pkg.github.com/${{ github.repository_owner }}/index.json
+    description: The NuGet package source server URL
+  skip-duplicate:
+    required: false
+    description: If a package and version already exists, skip it and continue
+runs:
+  using: node12
+  main: action.js
+author: Fredrik Høisæther Rasch <fredrik.rasch@gmail.com>
+branding:
+  color: purple
+  icon: package
