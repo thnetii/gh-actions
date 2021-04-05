@@ -5,5 +5,7 @@
     <Product>TH-NETII Software development</Product>
     <Company>TH-NETII Rasch Solutions</Company>
     <Copyright>Written by Fredrik Høisæther Rasch, $([System.DateTime]::Now.Year)</Copyright>
+    <VersionPrefix>0.0.1</VersionPrefix>
+    <VersionSuffix>preview1</VersionSuffix>
   </PropertyGroup>
 </Project>
