@@ -15,6 +15,8 @@ jobs:
     name: Publish NuGet package
     runs-on: ubuntu-latest
     steps:
+      - name: Chekout ${{ github.repository }}@${{ github.ref }}
+        uses: actions/checkout@v2
       - name: Prepare .NET NuGet Push action
         uses: ./def/typescript-action-prepare
         with:
@@ -27,5 +29,8 @@ jobs:
           run_id: ${{ github.event.workflow_run.id }}
           name: ${{ github.event.workflow_run.repository.owner.login }}-${{ github.event.workflow_run.repository.name }}-nupkg-release
           repo: ${{ github.repository }}
+          path: artifacts
       - name: dotnet nuget push
         uses: ./def/dotnet-nuget-push
+        with:
+          path: artifacts/**/*.nupkg
