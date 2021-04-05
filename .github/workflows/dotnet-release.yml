@@ -24,7 +24,7 @@ jobs:
       - name: Download artifact
         uses: dawidd6/action-download-artifact@v2
         with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
+          github_token: ${{ github.token }}
           workflow: ${{ github.event.workflow.id }}
           run_id: ${{ github.event.workflow_run.id }}
           name: ${{ github.event.workflow_run.repository.owner.login }}-${{ github.event.workflow_run.repository.name }}-nupkg-release
@@ -34,3 +34,4 @@ jobs:
         uses: ./def/dotnet-nuget-push
         with:
           path: artifacts/**/*.nupkg
+          # api-key: ${{ github.token }}
