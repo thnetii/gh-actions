@@ -39,9 +39,13 @@ const asyncMain = async () => {
     if (inputs.skip_duplicate)
       execArgs.push('--skip-duplicate');
 
-    const pushErrorCode = await exec.exec('dotnet', execArgs);
-    if (pushErrorCode)
-      core.setFailed(`Failed to push nupkg file: ${nupkgPathParsed.name}`);
+    try {
+      const pushErrorCode = await exec.exec('dotnet', execArgs);
+      if (pushErrorCode)
+        core.setFailed(`Failed to push nupkg file: ${nupkgPathParsed.name}`);
+    } catch (err) {
+      core.setFailed(err);
+    }
   }
 };
 asyncMain();
