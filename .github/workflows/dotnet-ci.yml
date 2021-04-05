@@ -148,7 +148,8 @@ jobs:
           runtime: ${{ matrix['runtime.id'] }}
           dotnet-arguments: |
             --nologo
-            --output packages/bld
+            --output
+            packages/bld
           msbuild-arguments: ${{ matrix['msbuild.arguments'] }}
       - name: Upload Nuget artifacts
         if: ${{ steps.dotnet_pack.outcome == 'success' }}
@@ -164,6 +165,7 @@ jobs:
           command: build
           project: |
             [Ss]rc/**/*.*proj
+            [Ss]amples?/**/*.*proj
           configuration: ${{ matrix['configuration.id'] }}
           runtime: ${{ matrix['runtime.id'] }}
           dotnet-arguments: --nologo
