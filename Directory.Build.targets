@@ -51,6 +51,24 @@
     </PropertyGroup>
   </Target>
 
+  <Target Name="SetPackageVersionToVersionWithBuildId"
+          Condition=" '$(BuildId)' != ''"
+          BeforeTargets="GenerateNuspec"
+          >
+    <PropertyGroup Condition="!(
+                    '$(Configuration)' == 'Release' AND (
+                      $(BuildSourceBranch.StartsWith('refs/heads/releases/')) OR
+                      $(BuildSourceBranch.StartsWith('releases/'))
+                    ))">
+      <!-- Follow SemVer 2.0 rules -->
+      <_VersionContainsHyphen>false</_VersionContainsHyphen>
+      <_VersionContainsHyphen Condition="$(Version.Contains('-'))">true</_VersionContainsHyphen>
+
+      <PackageVersion Condition="!$(_VersionContainsHyphen)">$(Version)-build$(BuildId)</PackageVersion>
+      <PackageVersion Condition="$(_VersionContainsHyphen)">$(Version).build$(BuildId)</PackageVersion>
+    </PropertyGroup>
+  </Target>
+
   <Target Name="AddBuildIdPropertyToAssemblyVersionAndTruncateFileVersion"
           Condition=" '$(BuildId)' != ''"
           DependsOnTargets="GetAssemblyVersion"
