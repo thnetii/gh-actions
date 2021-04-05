@@ -33,3 +33,5 @@ jobs:
         uses: ./def/dotnet-nuget-push
         with:
           path: artifacts/**/*.nupkg
+        env:
+          ACTIONS_STEP_DEBUG: true
