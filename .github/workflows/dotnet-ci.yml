@@ -130,12 +130,7 @@ jobs:
         shell: pwsh
         run: |
           $packageTaskEnv = "DOTNET_CI_PACKAGE_TASK=${{ matrix['runtime'] == 'agnostic' }}"
-          Write-Host $packageTaskEnv
           $packageTaskEnv | Out-File -LiteralPath $ENV:GITHUB_ENV -Append -Encoding utf8
-
-          $publishTaskEnv = "DOTNET_CI_PUBLISH_TASK=${{ matrix['runtime'] != 'agnostic' }}"
-          Write-Host $publishTaskEnv
-          $publishTaskEnv | Out-File -LiteralPath $ENV:GITHUB_ENV -Append -Encoding utf8
       - name: dotnet pack
         id: dotnet_pack
         if: ${{ env['DOTNET_CI_PACKAGE_TASK'] == 'true' }}
@@ -159,7 +154,6 @@ jobs:
           path: packages/bld
       - name: dotnet publish
         id: dotnet_publish
-        if: ${{ env['DOTNET_CI_PUBLISH_TASK'] == 'true' }}
         uses: ./def/dotnet-sdk
         with:
           command: build
