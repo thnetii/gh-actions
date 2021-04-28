@@ -4,23 +4,11 @@ updates:
     directory: "/"
     schedule:
       interval: "daily"
-    assignees:
-      - "fredrikhr"
-  - package-ecosystem: "gitsubmodule"
-    directory: "/"
-    schedule:
-      interval: "daily"
-    assignees:
-      - "fredrikhr"
-  - package-ecosystem: "nuget"
-    directory: "/"
-    schedule:
-      interval: "daily"
-    assignees:
+    reviewers:
       - "fredrikhr"
   - package-ecosystem: "npm"
     directory: "/def/dotnet-sdk"
     schedule:
       interval: "daily"
-    assignees:
+    reviewers:
       - "fredrikhr"
