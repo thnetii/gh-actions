@@ -20,6 +20,6 @@
   "dependencies": {
     "@actions/core": "^1.2.6",
     "@actions/exec": "^1.0.4",
-    "@actions/glob": "^0.1.1"
+    "@actions/glob": "^0.2.0"
   }
 }
